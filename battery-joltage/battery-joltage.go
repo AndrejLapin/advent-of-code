@@ -16,20 +16,20 @@ func main() {
 	}
 	defer file.Close()
 
-	joltage_sum := 0
+	joltageSum := 0
 
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		const digit_count = 12
-		digitArray := [digit_count]byte{}
+		const digitCount = 12
+		digitArray := [digitCount]byte{}
 		highestIndex := 0
-		for digit := 1; digit <= digit_count; digit++ {
+		for digit := 1; digit <= digitCount; digit++ {
 			highestCurrent := highestIndex
 			// fmt.Printf("Checking for digit %d\n", digit)
 			// fmt.Printf("Starting from %d\n", highestCurrent+1)
-			for index := highestCurrent + 1; index+(digit_count-digit) < len(line); index++ {
+			for index := highestCurrent + 1; index+(digitCount-digit) < len(line); index++ {
 				if line[index] > line[highestCurrent] {
 					highestCurrent = index
 				}
@@ -38,12 +38,12 @@ func main() {
 			digitArray[digit-1] = line[highestCurrent]
 			highestIndex = highestCurrent + 1
 		}
-		found_joltage, err := strconv.Atoi(string(digitArray[:]))
+		foundJoltage, err := strconv.Atoi(string(digitArray[:]))
 		if err != nil {
 			panic(err)
 		}
 		// fmt.Println(found_joltage)
-		joltage_sum += found_joltage
+		joltageSum += foundJoltage
 	}
-	fmt.Println(joltage_sum)
+	fmt.Println(joltageSum)
 }
