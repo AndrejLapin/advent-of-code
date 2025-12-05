@@ -48,7 +48,6 @@ func main() {
 			loopCount := 10
 			for findCanExpand && loopCount > 0 {
 				loopCount--
-				rangeDiscarded := false
 				rangeExpanded := false
 				findCanExpand = false
 				currentExpandedRange := -1
@@ -77,13 +76,8 @@ func main() {
 						break
 					} else if currentRange[0] >= singleRange[0] && currentRange[1] <= singleRange[1] {
 						emplaceRange = false
-						rangeDiscarded = true
 						break
 					}
-				}
-
-				if rangeDiscarded {
-					break
 				}
 
 				if rangeExpanded {
