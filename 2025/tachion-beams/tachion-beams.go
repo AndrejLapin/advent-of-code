@@ -19,9 +19,6 @@ func main() {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 
-	// easy with char positions
-	// with S we save the initial index
-	// then we add more indecies
 	scanner.Scan()
 	firstLine := scanner.Text()
 	beamLine := make([]int, len(firstLine))
@@ -34,22 +31,17 @@ func main() {
 		reducedString := line
 		splitterPos := strings.Index(reducedString, "^")
 		actualSplitterPos := splitterPos
-		// fmt.Println(beamLine)
-		// fmt.Println(line)
 		copy(nextBeamLine, beamLine)
 
 		for splitterPos != -1 {
 			reducedString = reducedString[splitterPos+1:]
-			// fmt.Println(reducedString)
-			if splitterPos != -1 && beamLine[actualSplitterPos] != 0 {
+			if beamLine[actualSplitterPos] != 0 {
 				nextBeamLine[actualSplitterPos-1] += beamLine[actualSplitterPos]
 				nextBeamLine[actualSplitterPos] = 0
 				nextBeamLine[actualSplitterPos+1] += beamLine[actualSplitterPos]
 			}
 			splitterPos = strings.Index(reducedString, "^")
-			// fmt.Printf("Splitter pos: %d\n", splitterPos)
 			actualSplitterPos += splitterPos + 1
-			// fmt.Printf("Actual splitter pos: %d\n", actualSplitterPos)
 		}
 		copy(beamLine, nextBeamLine)
 	}
