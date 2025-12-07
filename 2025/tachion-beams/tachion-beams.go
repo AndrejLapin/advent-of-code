@@ -19,16 +19,14 @@ func main() {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 
-	hitSplitterCount := 0
-
 	// easy with char positions
 	// with S we save the initial index
 	// then we add more indecies
 	scanner.Scan()
 	firstLine := scanner.Text()
-	beamLine := make([]bool, len(firstLine))
-	nextBeamLine := make([]bool, len(firstLine))
-	beamLine[strings.Index(firstLine, "S")] = true
+	beamLine := make([]int, len(firstLine))
+	nextBeamLine := make([]int, len(firstLine))
+	beamLine[strings.Index(firstLine, "S")] = 1
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -43,11 +41,10 @@ func main() {
 		for splitterPos != -1 {
 			reducedString = reducedString[splitterPos+1:]
 			// fmt.Println(reducedString)
-			if splitterPos != -1 && beamLine[actualSplitterPos] {
-				nextBeamLine[actualSplitterPos-1] = true
-				nextBeamLine[actualSplitterPos] = false
-				nextBeamLine[actualSplitterPos+1] = true
-				hitSplitterCount++
+			if splitterPos != -1 && beamLine[actualSplitterPos] != 0 {
+				nextBeamLine[actualSplitterPos-1] += beamLine[actualSplitterPos]
+				nextBeamLine[actualSplitterPos] = 0
+				nextBeamLine[actualSplitterPos+1] += beamLine[actualSplitterPos]
 			}
 			splitterPos = strings.Index(reducedString, "^")
 			// fmt.Printf("Splitter pos: %d\n", splitterPos)
@@ -56,5 +53,9 @@ func main() {
 		}
 		copy(beamLine, nextBeamLine)
 	}
-	fmt.Println(hitSplitterCount)
+	timeLineCount := 0
+	for _, beamCount := range beamLine {
+		timeLineCount += beamCount
+	}
+	fmt.Println(timeLineCount)
 }
