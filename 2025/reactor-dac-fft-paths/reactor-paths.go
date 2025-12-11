@@ -45,7 +45,7 @@ func searchForward(firstSearchState Device, target string) int {
 
 func searchBackward(firstSearchState Device, target string) int {
 	foundAfterXIterations := -1
-	const maxNewIterations = 2
+	const maxNewIterations = 3
 	pathCount := 1
 	searchPaths := []Device{}
 	searchPaths = append(searchPaths, firstSearchState)
