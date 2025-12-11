@@ -11,6 +11,7 @@ import (
 
 type Device struct {
 	Id              string
+	IterationCount  int
 	Inputs, Outputs []*Device
 }
 
@@ -43,20 +44,38 @@ func searchForward(firstSearchState Device, target string) int {
 }
 
 func searchBackward(firstSearchState Device, target string) int {
+	foundAfterXIterations := -1
+	const maxNewIterations = 2
 	pathCount := 1
 	searchPaths := []Device{}
 	searchPaths = append(searchPaths, firstSearchState)
 	for len(searchPaths) > 0 {
 		currentSearchPath := searchPaths[0]
 		if currentSearchPath.Id == target {
+			if foundAfterXIterations == -1 {
+				foundAfterXIterations = currentSearchPath.IterationCount
+			}
 			searchPaths = searchPaths[1:]
+			continue
+		}
+
+		currentSearchPath.IterationCount += 1
+
+		if foundAfterXIterations != -1 && currentSearchPath.IterationCount >
+			foundAfterXIterations+maxNewIterations {
+			searchPaths = searchPaths[1:]
+			pathCount -= 1
 			continue
 		}
 
 		pathCount += len(currentSearchPath.Inputs) - 1
 		newSearchPaths := []Device{}
 		for _, input := range currentSearchPath.Inputs {
-			newSearchPaths = append(newSearchPaths, *input)
+			newSearchPaths = append(newSearchPaths, Device{
+				Id:             input.Id,
+				IterationCount: currentSearchPath.IterationCount,
+				Inputs:         input.Inputs, Outputs: input.Outputs,
+			})
 		}
 		searchPaths = append(searchPaths, newSearchPaths...)
 		searchPaths = searchPaths[1:]
@@ -155,6 +174,16 @@ func main() {
 
 	fromDacToFft := searchBackward(*deviceMap[dac], fft)
 	fmt.Printf("From dac to fft %d\n", fromDacToFft)
+
+	// these have to navigate towards eachother, the forward head should find dac
+	// the backward head should find fft
+	// but how do we know when to halt them?
+	// how do we make them not go past eachother?
+	// there must be multiple way to go from fft to dac
+
+	// in the current backward search dac finds all paths to fft
+	// but then after some time it just goes past it and continues searching for useless paths
+	// let's explore the pattern maybe?
 
 	fromDacToOut := searchForward(*deviceMap[dac], end)
 	fmt.Printf("From dac to out %d\n", fromDacToOut)
